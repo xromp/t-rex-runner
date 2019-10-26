@@ -2847,6 +2847,7 @@
 
 function onDocumentLoad() {
   const auth  = new Auth();
+  const runner = new Runner('.interstitial-wrapper');
   const container = document.getElementById('main-frame-error');
   const googleSignInBtn = document.getElementById('google-signin');
   const googleSignOutBtn = document.getElementById('google-signout');
@@ -2856,7 +2857,7 @@ function onDocumentLoad() {
   googleSignOutBtn.addEventListener('click', auth.signOutGoogle);
 
   firebase.auth().onAuthStateChanged(function(user) {
-    const runner = new Runner('.interstitial-wrapper')
+    
     if (user) {
       googleSignInBtn.classList.add("hide");
       googleSignOutBtn.classList.remove("hide");
