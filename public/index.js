@@ -70,6 +70,10 @@
         } else {
             this.loadImages();
         }
+
+        const database = new Firestore();
+        database.listen(1);
+        console.log("hey")
     }
     window['Runner'] = Runner;
 
@@ -602,18 +606,23 @@
          */
         handleEvent: function (e) {
             return (function (evtType, events) {
-                switch (evtType) {
-                    case events.KEYDOWN:
-                    case events.TOUCHSTART:
-                    case events.MOUSEDOWN:
-                        this.onKeyDown(e);
-                        break;
-                    case events.KEYUP:
-                    case events.TOUCHEND:
-                    case events.MOUSEUP:
+              switch (evtType) {
+                  case events.KEYDOWN:
+                  case events.TOUCHSTART:
+                  case events.MOUSEDOWN:
+                      if (e.keyCode == 38) {
                         this.onKeyUp(e);
-                        break;
-                }
+                      } else {
+                        this.onKeyDown(e);
+                      }
+                      this.onKeyDown(e);
+                      break;
+                  case events.KEYUP:
+                  case events.TOUCHEND:
+                  case events.MOUSEUP:
+                      this.onKeyUp(e);
+                      break;
+              }
             }.bind(this))(e.type, Runner.events);
         },
 
@@ -660,6 +669,7 @@
          */
         onKeyDown: function (e) {
             // Prevent native page scrolling whilst tapping on mobile.
+            console.log("down: ", e.keyCode);
             if (IS_MOBILE && this.playing) {
                 e.preventDefault();
             }
@@ -707,6 +717,7 @@
          */
         onKeyUp: function (e) {
             var keyCode = String(e.keyCode);
+            console.log("up: ", e.keyCode);
             var isjumpKey = Runner.keycodes.JUMP[keyCode] ||
                 e.type == Runner.events.TOUCHEND ||
                 e.type == Runner.events.MOUSEDOWN;
@@ -767,7 +778,7 @@
         gameOver: function () {
             this.playSound(this.soundFx.HIT);
             vibrate(200);
-
+            0
             this.stop();
             this.crashed = true;
             this.distanceMeter.acheivement = false;
@@ -2700,6 +2711,50 @@
                 this.dimensions.WIDTH));
         }
     };
+
+    function Firestore() {
+      this.ref = firebase.firestore();
+    }
+
+    function keyPress(key) {
+      var event = document.createEvent('Event');
+      event.keyCode = key; // Deprecated, prefer .key instead.
+      event.key = key;
+      event.initEvent('keydown');
+      document.dispatchEvent(event);
+    }
+    
+
+    Firestore.prototype = {
+      listen: function(player) {
+        this.ref.collection("players").doc(player.toString())
+          .onSnapshot(function(doc) {
+              var source = doc.metadata.hasPendingWrites ? "Local" : "Server";
+              console.log(source, " data: ", doc.data());
+              switch (doc.data()["action"]) {
+                case 0:
+                  break;
+              
+                case 1:
+                  // UP
+                  console.log("UP!");
+                  // document.dispatchEvent(new KeyboardEvent('keydown',{'key':'38'}));
+                  keyPress(38);
+                  break;
+
+                case 2:
+                  // DOWN
+                  // console.log("down!");
+                  // document.dispatchEvent(new KeyboardEvent('keydown',{'keyCode':'40'}));
+                  break;
+  
+                default:
+                  break;
+              }
+              
+          });
+      }
+    }
 })();
 
 
