@@ -7,11 +7,10 @@
     /**
      * T-Rex runner.
      * @param {string} outerContainerId Outer containing element id.
-     * @param {Object} opt_config
      * @constructor
      * @export
      */
-    function Runner(outerContainerId, opt_config) {
+    function Runner(outerContainerId) {
         // Singleton
         if (Runner.instance_) {
             return Runner.instance_;
@@ -23,7 +22,7 @@
         this.snackbarEl = null;
         this.detailsButton = this.outerContainerEl.querySelector('#details-button');
 
-        this.config = opt_config || Runner.config;
+        this.config = Runner.config;
 
         this.dimensions = Runner.defaultDimensions;
 
@@ -45,7 +44,7 @@
         this.obstacles = [];
 
         this.activated = false; // Whether the easter egg has been activated.
-        this.playing = false; // Whether the game is currently in play state.
+        this.playing = false; // Whether the  is currently in play state.
         this.crashed = false;
         this.paused = false;
         this.inverted = false;
@@ -59,27 +58,25 @@
         this.soundFx = {};
 
         // Global web audio context for playing sounds.
-        this.audioContext = null;
+        this.audioContext = {};
 
         // Images.
         this.images = {};
         this.imagesLoaded = 0;
 
+        this.sourceNode = {};
+
         if (this.isDisabled()) {
             this.setupDisabledRunner();
         } else {
             this.loadImages();
-        }
-
-        const database = new Firestore();
-        database.listen(1);
-        console.log("hey")
+        }        
     }
     window['Runner'] = Runner;
 
 
     /**
-     * Default game width.
+     * Default  width.
      * @const
      */
     var DEFAULT_WIDTH = 600;
@@ -103,7 +100,7 @@
     var IS_TOUCH_ENABLED = 'ontouchstart' in window;
 
     /**
-     * Default game configuration.
+     * Default  configuration.
      * @enum {number}
      */
     Runner.config = {
@@ -126,7 +123,7 @@
         MIN_JUMP_HEIGHT: 35,
         MOBILE_SPEED_COEFFICIENT: 1.2,
         RESOURCE_TEMPLATE_ID: 'audio-resources',
-        SPEED: 6,
+        SPEED: 3,
         SPEED_DROP_COEFFICIENT: 3
     };
 
@@ -196,7 +193,8 @@
     Runner.sounds = {
         BUTTON_PRESS: 'offline-sound-press',
         HIT: 'offline-sound-hit',
-        SCORE: 'offline-sound-reached'
+        SCORE: 'offline-sound-reached',
+        BACKGROUND: 'running-sound-bg'
     };
 
 
@@ -312,7 +310,6 @@
          */
         loadSounds: function () {
             if (!IS_IOS) {
-                this.audioContext = new AudioContext();
 
                 var resourceTemplate =
                     document.getElementById(this.config.RESOURCE_TEMPLATE_ID).content;
@@ -324,15 +321,17 @@
                     var buffer = decodeBase64ToArrayBuffer(soundSrc);
 
                     // Async, so no guarantee of order in array.
-                    this.audioContext.decodeAudioData(buffer, function (index, audioData) {
+                    this.audioContext[sound] = new AudioContext();
+                    this.audioContext[sound].decodeAudioData(buffer, function (index, audioData) {
                         this.soundFx[index] = audioData;
+                        this.soundFx[index]["type"] = sound;
                     }.bind(this, sound));
                 }
             }
         },
 
         /**
-         * Sets the game speed. Adjust the speed accordingly if on a smaller screen.
+         * Sets the  speed. Adjust the speed accordingly if on a smaller screen.
          * @param {number} opt_speed
          */
         setSpeed: function (opt_speed) {
@@ -395,6 +394,12 @@
                 this.debounceResize.bind(this));
         },
 
+        listenToDatabase: function(player) {
+          const database = new Database();
+          database.listen(player.uid);
+  
+        },
+
         /**
          * Create the touch controller. A div that covers whole screen.
          */
@@ -415,7 +420,7 @@
         },
 
         /**
-         * Adjust game space dimensions on resize.
+         * Adjust  space dimensions on resize.
          */
         adjustDimensions: function () {
             clearInterval(this.resizeTimerId_);
@@ -450,15 +455,15 @@
                 }
 
                 // Game over panel.
-                if (this.crashed && this.gameOverPanel) {
-                    this.gameOverPanel.updateDimensions(this.dimensions.WIDTH);
-                    this.gameOverPanel.draw();
+                if (this.crashed && this.OverPanel) {
+                    this.OverPanel.updateDimensions(this.dimensions.WIDTH);
+                    this.OverPanel.draw();
                 }
             }
         },
 
         /**
-         * Play the game intro.
+         * Play the  intro.
          * Canvas container width expands out to the full width.
          */
         playIntro: function () {
@@ -484,6 +489,9 @@
                 // }
                 this.playing = true;
                 this.activated = true;
+                const note = document.getElementById('note');
+                note.classList.add("hide")
+                this.playSound(this.soundFx.BACKGROUND)
             } else if (this.crashed) {
                 this.restart();
             }
@@ -491,7 +499,7 @@
 
 
         /**
-         * Update the game status to started.
+         * Update the  status to started.
          */
         startGame: function () {
             this.runningTime = 0;
@@ -500,7 +508,7 @@
             this.containerEl.style.webkitAnimation = '';
             this.playCount++;
 
-            // Handle tabbing off the page. Pause the current game.
+            // Handle tabbing off the page. Pause the current .
             document.addEventListener(Runner.events.VISIBILITY,
                 this.onVisibilityChange.bind(this));
 
@@ -517,7 +525,7 @@
         },
 
         /**
-         * Update the game frame and schedules the next one.
+         * Update the  frame and schedules the next one.
          */
         update: function () {
             this.updatePending = false;
@@ -549,11 +557,10 @@
                     this.horizon.update(deltaTime, this.currentSpeed, hasObstacles,
                         this.inverted);
                 }
-
                 // Check for collisions.
                 var collision = hasObstacles &&
                     checkForCollision(this.horizon.obstacles[0], this.tRex);
-
+                // console.log(this.horizon.obstacles[0] ,this.tRex)
                 if (!collision) {
                     this.distanceRan += this.currentSpeed * deltaTime / this.msPerFrame;
 
@@ -561,7 +568,7 @@
                         this.currentSpeed += this.config.ACCELERATION;
                     }
                 } else {
-                    this.gameOver();
+                    this.Over();
                 }
 
                 var playAchievementSound = this.distanceMeter.update(deltaTime,
@@ -685,7 +692,7 @@
                             errorPageController.trackEasterEgg();
                         }
                     }
-                    //  Play sound effect and jump on starting the game for the first time.
+                    //  Play sound effect and jump on starting the  for the first time.
                     if (!this.tRex.jumping && !this.tRex.ducking) {
                         this.playSound(this.soundFx.BUTTON_PRESS);
                         this.tRex.startJump(this.currentSpeed);
@@ -717,7 +724,6 @@
          */
         onKeyUp: function (e) {
             var keyCode = String(e.keyCode);
-            console.log("up: ", e.keyCode);
             var isjumpKey = Runner.keycodes.JUMP[keyCode] ||
                 e.type == Runner.events.TOUCHEND ||
                 e.type == Runner.events.MOUSEDOWN;
@@ -765,7 +771,7 @@
         },
 
         /**
-         * Whether the game is running.
+         * Whether the  is running.
          * @return {boolean}
          */
         isRunning: function () {
@@ -775,8 +781,8 @@
         /**
          * Game over state.
          */
-        gameOver: function () {
-            this.playSound(this.soundFx.HIT);
+        Over: function () {
+            /* this.playSound(this.soundFx.HIT);
             vibrate(200);
             0
             this.stop();
@@ -786,12 +792,12 @@
             this.tRex.update(100, Trex.status.CRASHED);
 
             // Game over panel.
-            if (!this.gameOverPanel) {
-                this.gameOverPanel = new GameOverPanel(this.canvas,
+            if (!this.OverPanel) {
+                this.OverPanel = new GameOverPanel(this.canvas,
                     this.spriteDef.TEXT_SPRITE, this.spriteDef.RESTART,
                     this.dimensions);
             } else {
-                this.gameOverPanel.draw();
+                this.OverPanel.draw();
             }
 
             // Update the high score.
@@ -801,7 +807,7 @@
             }
 
             // Reset the time clock.
-            this.time = getTimeStamp();
+            this.time = getTimeStamp(); */
         },
 
         stop: function () {
@@ -835,14 +841,15 @@
                 this.distanceMeter.reset(this.highestScore);
                 this.horizon.reset();
                 this.tRex.reset();
-                this.playSound(this.soundFx.BUTTON_PRESS);
+                // this.playSound(this.soundFx.BUTTON_PRESS);
+                this.playSound(this.soundFx.BACKGROUND);
                 this.invert(true);
                 this.update();
             }
         },
 
         /**
-         * Pause the game if the tab is not in focus.
+         * Pause the  if the tab is not in focus.
          */
         onVisibilityChange: function (e) {
             if (document.hidden || document.webkitHidden || e.type == 'blur' ||
@@ -860,13 +867,13 @@
          */
         playSound: function (soundBuffer) {
             if (soundBuffer) {
-                var sourceNode = this.audioContext.createBufferSource();
-                sourceNode.buffer = soundBuffer;
-                sourceNode.connect(this.audioContext.destination);
-                sourceNode.start(0);
+                this.sourceNode[soundBuffer.type] = this.audioContext[soundBuffer.type].createBufferSource();
+                this.sourceNode[soundBuffer.type].buffer = soundBuffer;
+                this.sourceNode[soundBuffer.type].connect(this.audioContext[soundBuffer.type].destination);
+                this.sourceNode[soundBuffer.type].start(0);
+                
             }
         },
-
         /**
          * Inverts the current page / canvas colors.
          * @param {boolean} Whether to reset colors.
@@ -1405,7 +1412,7 @@
 
             /**
              * Check if obstacle is visible.
-             * @return {boolean} Whether the obstacle is in the game area.
+             * @return {boolean} Whether the obstacle is in the  area.
              */
             isVisible: function () {
                 return this.xPos + this.width > 0;
@@ -1488,7 +1495,7 @@
 
     //******************************************************************************
     /**
-     * T-rex game character.
+     * T-rex  character.
      * @param {HTMLCanvas} canvas
      * @param {Object} spritePos Positioning within image sprite.
      * @constructor
@@ -1835,7 +1842,7 @@
         },
 
         /**
-         * Reset the t-rex to running at start of game.
+         * Reset the t-rex to running at start of .
          */
         reset: function () {
             this.yPos = this.groundYPos;
@@ -2716,6 +2723,10 @@
       this.ref = firebase.firestore();
     }
 
+    function Database() {
+      this.database = firebase.database();
+    }
+
     function keyPress(key) {
       var event = document.createEvent('Event');
       event.keyCode = key; // Deprecated, prefer .key instead.
@@ -2724,7 +2735,6 @@
       document.dispatchEvent(event);
     }
     
-
     Firestore.prototype = {
       listen: function(player) {
         this.ref.collection("players").doc(player.toString())
@@ -2755,11 +2765,118 @@
           });
       }
     }
+
+    Database.prototype = {
+      listen: function(player) {
+        this.database.ref("players/"+player).on('value', function(snapshot) {
+          // updateStarCount(postElement, snapshot.val());
+          console.log(snapshot.val()["action"])
+          switch (snapshot.val()["action"]) {
+            case 0:
+              break;
+            case 1:
+              // UP
+              console.log("UP!");
+              // document.dispatchEvent(new KeyboardEvent('keydown',{'key':'38'}));
+              keyPress(38);
+              break;
+
+            case 2:
+              // DOWN
+              // console.log("down!");
+              // document.dispatchEvent(new KeyboardEvent('keydown',{'keyCode':'40'}));
+              break;
+
+            default:
+              break;
+          }
+        });
+          // .onSnapshot(function(doc) {
+          //     var source = doc.metadata.hasPendingWrites ? "Local" : "Server";
+          //     console.log(source, " data: ", doc.data());
+          //     switch (doc.data()["action"]) {
+          //       case 0:
+          //         break;
+              
+          //       case 1:
+          //         // UP
+          //         console.log("UP!");
+          //         // document.dispatchEvent(new KeyboardEvent('keydown',{'key':'38'}));
+          //         keyPress(38);
+          //         break;
+
+          //       case 2:
+          //         // DOWN
+          //         // console.log("down!");
+          //         // document.dispatchEvent(new KeyboardEvent('keydown',{'keyCode':'40'}));
+          //         break;
+  
+          //       default:
+          //         break;
+          //     }
+              
+          // });
+      }
+    }
+
+    function Auth() {
+
+    }
+
+    Auth.prototype = {
+      signInWithPopupGoogle: function() {
+        var provider = new firebase.auth.GoogleAuthProvider();
+        provider.addScope('https://www.googleapis.com/auth/contacts.readonly');
+        provider.setCustomParameters({
+          'login_hint': 'user@example.com'
+        });
+        firebase.auth().signInWithPopup(provider).then(function(result) {
+          var user = result.user;
+          console.log(user);
+        }).catch(function(error) {
+          console.error(error);
+        });
+      },
+      signOutGoogle: function () {
+        firebase.auth().signOut();
+      },
+    }
+
+    window['Auth'] = Auth;
 })();
 
-
 function onDocumentLoad() {
-    new Runner('.interstitial-wrapper');
+  const auth  = new Auth();
+  const container = document.getElementById('main-frame-error');
+  const googleSignInBtn = document.getElementById('google-signin');
+  const googleSignOutBtn = document.getElementById('google-signout');
+  const note = document.getElementById('note');
+
+  googleSignInBtn.addEventListener('click', auth.signInWithPopupGoogle);
+  googleSignOutBtn.addEventListener('click', auth.signOutGoogle);
+
+  firebase.auth().onAuthStateChanged(function(user) {
+    const runner = new Runner('.interstitial-wrapper')
+    if (user) {
+      googleSignInBtn.classList.add("hide");
+      googleSignOutBtn.classList.remove("hide");
+      container.classList.remove("hide");
+      note.classList.remove("hide");
+      runner.listenToDatabase(user);
+      runner.restart();
+      
+    } else {
+      if (runner.sourceNode["BACKGROUND"]) {
+        runner.sourceNode["BACKGROUND"].stop(runner.audioContext["BACKGROUND"].currentTime);
+      }
+      googleSignInBtn.classList.remove("hide");
+      googleSignOutBtn.classList.add("hide");
+      container.classList.add("hide");
+      note.classList.add("hide");
+    }
+  });
+  
+  
 }
 
 document.addEventListener('DOMContentLoaded', onDocumentLoad);

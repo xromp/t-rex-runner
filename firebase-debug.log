@@ -1,0 +1,37 @@
+[debug] [2019-10-26T13:46:01.945Z] ----------------------------------------------------------------------
+[debug] [2019-10-26T13:46:01.947Z] Command:       /home/rom/.nvm/versions/node/v10.16.0/bin/node /home/rom/.nvm/versions/node/v10.16.0/bin/firebase serve
+[debug] [2019-10-26T13:46:01.947Z] CLI Version:   7.6.1
+[debug] [2019-10-26T13:46:01.947Z] Platform:      linux
+[debug] [2019-10-26T13:46:01.947Z] Node Version:  v10.16.0
+[debug] [2019-10-26T13:46:01.947Z] Time:          Sat Oct 26 2019 21:46:01 GMT+0800 (Philippine Standard Time)
+[debug] [2019-10-26T13:46:01.947Z] ----------------------------------------------------------------------
+[debug] [2019-10-26T13:46:01.947Z] 
+[debug] [2019-10-26T13:46:01.953Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2019-10-26T13:46:01.954Z] > authorizing via signed-in user
+[debug] [2019-10-26T13:46:01.954Z] [iam] checking project trex-000 for permissions ["firebase.projects.get"]
+[debug] [2019-10-26T13:46:01.955Z] > refreshing access token with scopes: ["email","https://www.googleapis.com/auth/cloud-platform","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","openid"]
+[debug] [2019-10-26T13:46:01.956Z] >>> HTTP REQUEST POST https://www.googleapis.com/oauth2/v3/token  
+ <request body omitted>
+[debug] [2019-10-26T13:46:02.182Z] <<< HTTP RESPONSE 200
+[debug] [2019-10-26T13:46:02.263Z] >>> HTTP REQUEST POST https://cloudresourcemanager.googleapis.com/v1/projects/trex-000:testIamPermissions  
+
+[debug] [2019-10-26T13:46:03.461Z] <<< HTTP RESPONSE 200
+[debug] [2019-10-26T13:46:03.465Z] >>> HTTP REQUEST GET https://firebase.googleapis.com/v1beta1/projects/trex-000  
+ 
+[debug] [2019-10-26T13:46:04.177Z] <<< HTTP RESPONSE 200
+[info] 
+[info] === Serving from '/home/rom/dev/hackton/2019/t-rex-runner'...
+[info] 
+[debug] [2019-10-26T13:46:04.185Z] >>> HTTP REQUEST GET https://firebase.googleapis.com/v1beta1/projects/trex-000/webApps/-/config  
+ 
+[warn] ⚠  Your requested "node" version "8" doesn't match your global version "10"
+[info] ✔  functions: Emulator started at http://localhost:5001
+[debug] [2019-10-26T13:46:05.151Z] <<< HTTP RESPONSE 200
+[info] i  functions: Watching "/home/rom/dev/hackton/2019/t-rex-runner/functions" for Cloud Functions...
+[info] i  hosting: Serving hosting files from: public
+[info] ✔  hosting: Local server: http://localhost:5000
+[debug] [2019-10-26T13:46:05.646Z] [runtime-status] Functions runtime initialized. {"cwd":"/home/rom/dev/hackton/2019/t-rex-runner/functions","node_version":"10.16.0"}
+[debug] [2019-10-26T13:46:05.647Z] [runtime-status] Disabled runtime features: {"functions_config_helper":true,"network_filtering":true,"timeout":true,"memory_limiting":true,"admin_stubs":true} {}
+[debug] [2019-10-26T13:46:05.653Z] [runtime-status] Resolved module firebase-admin {"declared":true,"installed":true,"version":"8.6.1","resolution":"/home/rom/dev/hackton/2019/t-rex-runner/functions/node_modules/firebase-admin/lib/index.js"}
+[debug] [2019-10-26T13:46:05.660Z] [runtime-status] Resolved module firebase-functions {"declared":true,"installed":true,"version":"3.3.0","resolution":"/home/rom/dev/hackton/2019/t-rex-runner/functions/node_modules/firebase-functions/lib/index.js"}
+[debug] [2019-10-26T13:46:05.661Z] [runtime-status] Resolved module firebase-functions {"declared":true,"installed":true,"version":"3.3.0","resolution":"/home/rom/dev/hackton/2019/t-rex-runner/functions/node_modules/firebase-functions/lib/index.js"}
