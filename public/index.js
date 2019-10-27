@@ -66,6 +66,8 @@
 
         this.sourceNode = {};
 
+        this.user = {};
+
         if (this.isDisabled()) {
             this.setupDisabledRunner();
         } else {
@@ -394,10 +396,10 @@
                 this.debounceResize.bind(this));
         },
 
-        listenToDatabase: function(player) {
-          const database = new Database();
-          database.listen(player.uid);
-  
+        setPlayerInfo: function(player) {
+          const db = new Firestore();
+          this.user = player;
+          db.listen(this.user);
         },
 
         /**
@@ -568,7 +570,7 @@
                         this.currentSpeed += this.config.ACCELERATION;
                     }
                 } else {
-                    this.Over();
+                    // this.gameOver();
                 }
 
                 var playAchievementSound = this.distanceMeter.update(deltaTime,
@@ -617,12 +619,13 @@
                   case events.KEYDOWN:
                   case events.TOUCHSTART:
                   case events.MOUSEDOWN:
-                      if (e.keyCode == 38) {
-                        this.onKeyUp(e);
-                      } else {
-                        this.onKeyDown(e);
-                      }
                       this.onKeyDown(e);
+                      // if (e.keyCode == 38) {
+                      //   this.onKeyUp(e);
+                      // } else {
+                      //   this.onKeyDown(e);
+                      // }
+                      // this.onKeyDown(e);
                       break;
                   case events.KEYUP:
                   case events.TOUCHEND:
@@ -687,7 +690,8 @@
                     if (!this.playing) {
                         this.loadSounds();
                         this.playing = true;
-                        this.update();
+                        // this.update();
+                        console.log("restart!");
                         if (window.errorPageController) {
                             errorPageController.trackEasterEgg();
                         }
@@ -696,6 +700,8 @@
                     if (!this.tRex.jumping && !this.tRex.ducking) {
                         this.playSound(this.soundFx.BUTTON_PRESS);
                         this.tRex.startJump(this.currentSpeed);
+                    console.log("restart!");
+
                     }
                 }
 
@@ -745,7 +751,7 @@
             } else if (this.paused && isjumpKey) {
                 // Reset the jump state
                 this.tRex.reset();
-                this.play();
+                // this.play();
             }
         },
 
@@ -781,17 +787,16 @@
         /**
          * Game over state.
          */
-        Over: function () {
-            /* this.playSound(this.soundFx.HIT);
+        gameOver: function () {
+            // this.playSound(this.soundFx.HIT);
+            const db = new Firestore();
             vibrate(200);
-            0
             this.stop();
             this.crashed = true;
             this.distanceMeter.acheivement = false;
 
             this.tRex.update(100, Trex.status.CRASHED);
 
-            // Game over panel.
             if (!this.OverPanel) {
                 this.OverPanel = new GameOverPanel(this.canvas,
                     this.spriteDef.TEXT_SPRITE, this.spriteDef.RESTART,
@@ -807,9 +812,18 @@
             }
 
             // Reset the time clock.
-            this.time = getTimeStamp(); */
+            this.time = getTimeStamp();
+            // this.sourceNode["BACKGROUND"].stop(this.audioContext["BACKGROUND"].currentTime);
+            if (this.sourceNode["BACKGROUND"]) {
+              this.sourceNode["BACKGROUND"].stop(this.audioContext["BACKGROUND"].currentTime);
+              db.setScore(this.user, this.distanceRan);
+            }
+            console.log("this gameover")
+            
         },
-
+        playUntil: function(second =1) {
+          setTimeout(() => this.gameOver(), second* 1000);
+        },
         stop: function () {
             this.playing = false;
             this.paused = true;
@@ -841,13 +855,17 @@
                 this.distanceMeter.reset(this.highestScore);
                 this.horizon.reset();
                 this.tRex.reset();
-                // this.playSound(this.soundFx.BUTTON_PRESS);
-                this.playSound(this.soundFx.BACKGROUND);
                 this.invert(true);
                 this.update();
-            }
-        },
+                this.playSound(this.soundFx.BACKGROUND);
+                console.log(this.sourceNode);
+                
+                this.playUntil(100);
+                // setTimeout(() => this.gameOver(), 1* 1000);
 
+            }
+            // this.playUntil(1);
+          },
         /**
          * Pause the  if the tab is not in focus.
          */
@@ -857,7 +875,7 @@
                 this.stop();
             } else if (!this.crashed) {
                 this.tRex.reset();
-                this.play();
+                // this.play();
             }
         },
 
@@ -2736,19 +2754,20 @@
     }
     
     Firestore.prototype = {
-      listen: function(player) {
-        this.ref.collection("players").doc(player.toString())
+      listen: function(user) {
+        // let firstLoad =true;
+        this.ref.collection("players").doc(user.uid.toString())
           .onSnapshot(function(doc) {
               var source = doc.metadata.hasPendingWrites ? "Local" : "Server";
               console.log(source, " data: ", doc.data());
+              // if (firstLoad) return;
+              // firstLoad = false;
               switch (doc.data()["action"]) {
                 case 0:
                   break;
               
                 case 1:
                   // UP
-                  console.log("UP!");
-                  // document.dispatchEvent(new KeyboardEvent('keydown',{'key':'38'}));
                   keyPress(38);
                   break;
 
@@ -2763,14 +2782,18 @@
               }
               
           });
+      },
+      setScore:function(user, score) {
+        this.ref.collection("players").doc(user.uid.toString()).collection("activities").add({
+          score, date: firebase.firestore.Timestamp.fromDate(new Date())
+          // scores: firebase.firestore.FieldValue.arrayUnion({score, date: firebase.firestore.Timestamp.fromDate(new Date())})
+        })
       }
     }
 
     Database.prototype = {
       listen: function(player) {
         this.database.ref("players/"+player).on('value', function(snapshot) {
-          // updateStarCount(postElement, snapshot.val());
-          console.log(snapshot.val()["action"])
           switch (snapshot.val()["action"]) {
             case 0:
               break;
@@ -2791,31 +2814,6 @@
               break;
           }
         });
-          // .onSnapshot(function(doc) {
-          //     var source = doc.metadata.hasPendingWrites ? "Local" : "Server";
-          //     console.log(source, " data: ", doc.data());
-          //     switch (doc.data()["action"]) {
-          //       case 0:
-          //         break;
-              
-          //       case 1:
-          //         // UP
-          //         console.log("UP!");
-          //         // document.dispatchEvent(new KeyboardEvent('keydown',{'key':'38'}));
-          //         keyPress(38);
-          //         break;
-
-          //       case 2:
-          //         // DOWN
-          //         // console.log("down!");
-          //         // document.dispatchEvent(new KeyboardEvent('keydown',{'keyCode':'40'}));
-          //         break;
-  
-          //       default:
-          //         break;
-          //     }
-              
-          // });
       }
     }
 
@@ -2857,18 +2855,16 @@ function onDocumentLoad() {
   googleSignOutBtn.addEventListener('click', auth.signOutGoogle);
 
   firebase.auth().onAuthStateChanged(function(user) {
-    
     if (user) {
       googleSignInBtn.classList.add("hide");
       googleSignOutBtn.classList.remove("hide");
       container.classList.remove("hide");
       note.classList.remove("hide");
-      runner.listenToDatabase(user);
+      runner.setPlayerInfo(user);
       runner.restart();
-      
     } else {
-      if (runner.sourceNode["BACKGROUND"]) {
-        runner.sourceNode["BACKGROUND"].stop(runner.audioContext["BACKGROUND"].currentTime);
+      if (runner.user.uid) {
+        runner.gameOver();
       }
       googleSignInBtn.classList.remove("hide");
       googleSignOutBtn.classList.add("hide");
