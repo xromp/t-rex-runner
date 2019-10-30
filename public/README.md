@@ -1,29 +1,17 @@
-## t-rex-runner
+# Space Impact clone
 
-## I HAVE ADDED A NEW CHARACTER HOPE YOU ALL LIKE IT ##
+This is a Space Impact clone I wrote for a university course.
 
-the trex runner game extracted from chrome offline err page.
+It doesn't use any lib, it's written in JavaScript and HTML.
 
+You can play the game here: [zoltanvi.github.io](https://zoltanvi.github.io/).
 
-[go and enjoy! :smile: ](http://wayou.github.io/t-rex-runner/)
+## Screenshots from the game
 
-![chrome offline game cast](assets/screenshot.gif)
+![alt text](https://user-images.githubusercontent.com/27699756/40259293-cd97b794-5af5-11e8-8c58-8e5ca6bde865.jpg)
 
-## Interesting Forks/In Chinese, we call it 「花样玩法」
+![alt text](https://user-images.githubusercontent.com/27699756/42625874-20a90e9e-85c9-11e8-834d-a43fbae3ea81.png)
 
-- [vianroyal](https://github.com/vianroyal)/[t-rex-runner](https://github.com/vianroyal/t-rex-runner) [Kumamon runner](http://vianroyal.github.io/t-rex-runner/) 
-<br>
-![](assets/kumamon-runner.gif)
+![alt text](https://user-images.githubusercontent.com/27699756/42625875-20dccc5c-85c9-11e8-8d9d-b7c0555f1d6e.png)
 
-- [xkuga](https://github.com/xkuga)/[t-rex-runner](https://github.com/xkuga/t-rex-runner) [Hello KuGou](http://hellokugou.com/) 
-<br>
-![](assets/hello-kugou.gif)
-
-- [d-nery](https://github.com/d-nery/)/[t-rex-runner](https://github.com/d-nery/t-rex-runner) [Novas coisas](http://d-nery.github.io/t-rex-runner/) 
-<br>
-![](assets/novas-coisas.gif)
-
-- [chirag64](https://github.com/chirag64)/[t-rex-runner-bot](https://github.com/chirag64/t-rex-runner-bot) [t-rex runner bot](https://chirag64.github.io/t-rex-runner-bot/) 
-<br>
-![](assets/t-rex-runner-bot.gif)
-
+![alt text](https://user-images.githubusercontent.com/27699756/42625876-210395f8-85c9-11e8-9aa0-ff66afef7184.png)
