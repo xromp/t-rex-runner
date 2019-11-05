@@ -1,7 +1,9 @@
     const analytics = firebase.analytics();
     const messaging = firebase.messaging();
     const remoteConfig = firebase.remoteConfig();
-
+    const container = document.getElementById('gameArea');
+    const googleSignInBtn = document.getElementById('google-signin');
+    const googleSignOutBtn = document.getElementById('google-signout');
     //RemoteConfig
     remoteConfig.settings = {
         minimumFetchIntervalMillis: 3600000,
@@ -148,6 +150,46 @@
     canvas.addEventListener('mousedown', shipStartFire, false);
     canvas.addEventListener('mousedown', onButtonClick, false);
     canvas.addEventListener('mouseup', shipStopFire, false);
+    function Auth() {}
+    Auth.prototype = {
+        signInWithPopupGoogle: function() {
+          var provider = new firebase.auth.GoogleAuthProvider();
+          provider.addScope('https://www.googleapis.com/auth/contacts.readonly');
+          provider.setCustomParameters({
+            'login_hint': 'user@example.com'
+          });
+          firebase.auth().signInWithPopup(provider).then(function(result) {
+            var user = result.user;
+            console.log(user);
+          }).catch(function(error) {
+            console.error(error);
+          });
+        },
+        signOutGoogle: function () {
+          firebase.auth().signOut();
+        },
+    };
+
+    const auth = new Auth();
+    googleSignInBtn.addEventListener('click', auth.signInWithPopupGoogle);
+    googleSignOutBtn.addEventListener('click', auth.signOutGoogle);
+    
+    firebase.auth().onAuthStateChanged(function(user) {
+        if (user) {
+            googleSignInBtn.classList.add("hide");
+            googleSignOutBtn.classList.remove("hide");
+            container.classList.remove("hide");
+            note.classList.remove("hide");
+            // runner.listenToDatabase(user);
+            // runner.restart();
+            
+          } else {
+            googleSignInBtn.classList.remove("hide");
+            googleSignOutBtn.classList.add("hide");
+            container.classList.add("hide");
+            note.classList.add("hide");
+          }
+    });
 
     var requestAnimationFrame = window.requestAnimationFrame ||
         window.mozRequestAnimationFrame ||

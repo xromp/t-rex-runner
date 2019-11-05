@@ -1,0 +1,70 @@
+[debug] [2019-11-05T06:47:56.316Z] ----------------------------------------------------------------------
+[debug] [2019-11-05T06:47:56.317Z] Command:       /usr/bin/node /usr/bin/firebase serve --port 8081
+[debug] [2019-11-05T06:47:56.318Z] CLI Version:   7.2.1
+[debug] [2019-11-05T06:47:56.318Z] Platform:      linux
+[debug] [2019-11-05T06:47:56.318Z] Node Version:  v10.15.3
+[debug] [2019-11-05T06:47:56.318Z] Time:          Tue Nov 05 2019 14:47:56 GMT+0800 (Philippine Standard Time)
+[debug] [2019-11-05T06:47:56.318Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2019-11-05T06:47:56.322Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2019-11-05T06:47:56.322Z] > authorizing via signed-in user
+[debug] [2019-11-05T06:47:56.322Z] [iam] checking project trex-000 for permissions ["firebase.projects.get"]
+[debug] [2019-11-05T06:47:56.323Z] >>> HTTP REQUEST POST https://cloudresourcemanager.googleapis.com/v1/projects/trex-000:testIamPermissions  
+
+[debug] [2019-11-05T06:47:57.523Z] <<< HTTP RESPONSE 200
+[debug] [2019-11-05T06:47:57.525Z] >>> HTTP REQUEST GET https://firebase.googleapis.com/v1beta1/projects/trex-000  
+ 
+[debug] [2019-11-05T06:47:58.214Z] <<< HTTP RESPONSE 200
+[info] 
+[info] === Serving from '/usr/local/google/home/rommelp/dev/hackton/t-rex-runner'...
+[info] 
+[debug] [2019-11-05T06:47:58.219Z] >>> HTTP REQUEST GET https://firebase.googleapis.com/v1beta1/projects/trex-000/webApps/-/config  
+ 
+[warn] ⚠  Your requested "node" version "8" doesn't match your global version "10"
+[debug] [2019-11-05T06:47:58.230Z] >>> HTTP REQUEST GET https://firebase.googleapis.com/v1beta1/projects/trex-000/adminSdkConfig  
+ 
+[debug] [2019-11-05T06:47:58.846Z] <<< HTTP RESPONSE 200
+[info] ✔  functions: Emulator started at http://localhost:8082
+[debug] [2019-11-05T06:47:59.484Z] <<< HTTP RESPONSE 200
+[info] i  functions: Watching "/usr/local/google/home/rommelp/dev/hackton/t-rex-runner/functions" for Cloud Functions...
+[info] i  hosting: Serving hosting files from: public
+[info] ✔  hosting: Local server: http://localhost:8081
+[debug] [2019-11-05T06:47:59.698Z] [runtime-status] Functions runtime initialized. {"cwd":"/usr/local/google/home/rommelp/dev/hackton/t-rex-runner/functions","node_version":"10.15.3"}
+[debug] [2019-11-05T06:47:59.698Z] [runtime-status] Disabled runtime features: {"functions_config_helper":true,"network_filtering":true,"timeout":true,"memory_limiting":true,"protect_env":true,"admin_stubs":true} {}
+[warn] ⚠  The Cloud Functions emulator requires the module "firebase-admin" to be installed. This package is in your package.json, but it's not available. You probably need to run "npm install" in your functions directory.
+[info] i  functions: Your functions could not be parsed due to an issue with your node_modules (see above)
+[debug] [2019-11-05T06:52:24.434Z] ----------------------------------------------------------------------
+[debug] [2019-11-05T06:52:24.435Z] Command:       /usr/bin/node /usr/bin/firebase serve --port 8081
+[debug] [2019-11-05T06:52:24.435Z] CLI Version:   7.2.1
+[debug] [2019-11-05T06:52:24.435Z] Platform:      linux
+[debug] [2019-11-05T06:52:24.435Z] Node Version:  v10.15.3
+[debug] [2019-11-05T06:52:24.435Z] Time:          Tue Nov 05 2019 14:52:24 GMT+0800 (Philippine Standard Time)
+[debug] [2019-11-05T06:52:24.436Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2019-11-05T06:52:24.439Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2019-11-05T06:52:24.439Z] > authorizing via signed-in user
+[debug] [2019-11-05T06:52:24.439Z] [iam] checking project trex-000 for permissions ["firebase.projects.get"]
+[debug] [2019-11-05T06:52:24.440Z] >>> HTTP REQUEST POST https://cloudresourcemanager.googleapis.com/v1/projects/trex-000:testIamPermissions  
+
+[debug] [2019-11-05T06:52:25.525Z] <<< HTTP RESPONSE 200
+[debug] [2019-11-05T06:52:25.528Z] >>> HTTP REQUEST GET https://firebase.googleapis.com/v1beta1/projects/trex-000  
+ 
+[debug] [2019-11-05T06:52:26.215Z] <<< HTTP RESPONSE 200
+[info] 
+[info] === Serving from '/usr/local/google/home/rommelp/dev/hackton/t-rex-runner'...
+[info] 
+[debug] [2019-11-05T06:52:26.222Z] >>> HTTP REQUEST GET https://firebase.googleapis.com/v1beta1/projects/trex-000/webApps/-/config  
+ 
+[warn] ⚠  Your requested "node" version "8" doesn't match your global version "10"
+[debug] [2019-11-05T06:52:26.235Z] >>> HTTP REQUEST GET https://firebase.googleapis.com/v1beta1/projects/trex-000/adminSdkConfig  
+ 
+[debug] [2019-11-05T06:52:26.876Z] <<< HTTP RESPONSE 200
+[info] ✔  functions: Emulator started at http://localhost:8082
+[debug] [2019-11-05T06:52:27.676Z] <<< HTTP RESPONSE 200
+[info] i  functions: Watching "/usr/local/google/home/rommelp/dev/hackton/t-rex-runner/functions" for Cloud Functions...
+[info] i  hosting: Serving hosting files from: public
+[info] ✔  hosting: Local server: http://localhost:8081
+[debug] [2019-11-05T06:52:27.890Z] [runtime-status] Functions runtime initialized. {"cwd":"/usr/local/google/home/rommelp/dev/hackton/t-rex-runner/functions","node_version":"10.15.3"}
+[debug] [2019-11-05T06:52:27.890Z] [runtime-status] Disabled runtime features: {"functions_config_helper":true,"network_filtering":true,"timeout":true,"memory_limiting":true,"protect_env":true,"admin_stubs":true} {}
+[warn] ⚠  The Cloud Functions emulator requires the module "firebase-admin" to be installed. This package is in your package.json, but it's not available. You probably need to run "npm install" in your functions directory.
+[info] i  functions: Your functions could not be parsed due to an issue with your node_modules (see above)
