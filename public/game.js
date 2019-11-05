@@ -1,3 +1,30 @@
+    const analytics = firebase.analytics();
+    const messaging = firebase.messaging();
+    const remoteConfig = firebase.remoteConfig();
+
+    //RemoteConfig
+    remoteConfig.settings = {
+        minimumFetchIntervalMillis: 3600000,
+      };
+
+    var remoteHealth = 3;
+
+    remoteConfig.fetchAndActivate()
+    .then(() => {
+        //fetched
+        console.log('fetched lives: ', remoteConfig.getValue('lives'));
+        remoteHealth = remoteConfig.getValue('lives');
+        // maxHealth = remoteHealth;
+        // health = maxHealth;
+        // drawUI();
+    })
+    .catch((err) => {
+      console.error(err);
+    });
+      
+      
+
+
     var canvas = document.getElementById("gameArea");
     var c = canvas.getContext("2d");
 
@@ -71,8 +98,8 @@
     soundImg.off.src = "Sprites/soundOff.png";
     enemy.img1.src = "Sprites/enemy_white1.png";
     enemy.img2.src = "Sprites/enemy_white2.png";
-    boss.img1.src = "Sprites/swoop01.png";
-    boss.img2.src = "Sprites/swoop02.png";
+    boss.img1.src = "Sprites/sparky01.png";
+    boss.img2.src = "Sprites/sparky02.png";
 
     var UIHeight = 50;
 
@@ -83,7 +110,8 @@
     var isShipFiring = false;
     const fireRate = 15;
     var shipFireClock = fireRate;
-    const maxHealth = 1;
+ //   const maxHealth = 3;
+    var maxHealth = 3;
     var health = maxHealth;
     var playing = true;
     var menu = true;
@@ -114,7 +142,8 @@
         "#5dff53"
     ];
 
-    // canvas.addEventListener('mousemove', shipSetPos, false);
+    //TEST - uncomment first line
+    //canvas.addEventListener('mousemove', shipSetPos, false);
     canvas.addEventListener('mousemove', menuButtonHover, false);
     canvas.addEventListener('mousedown', shipStartFire, false);
     canvas.addEventListener('mousedown', onButtonClick, false);
@@ -206,6 +235,8 @@
                 this.ref.collection("players").doc("Q5EQAK64fpNprsBe2NwMUamMPa221").collection("activities").add({
                     score, date: firebase.firestore.Timestamp.fromDate(new Date())
                 })
+
+                analytics.logEvent('score', score, {debug_mode: true});
             }
         }
 
@@ -286,6 +317,9 @@
     }
 
     function playAgain(){
+        //Analytics
+        analytics.logEvent('play_again', {debug_mode: true});
+
         menu = true;
         health = maxHealth;
         score = 0;
@@ -349,10 +383,10 @@
 
         c.fillStyle = "#151515";
         c.font = "90px Roboto";
-        c.fillText("Space Impact", 120, 200);
+        c.fillText("Space Pi", 220, 200);
         c.lineWidth = 2;
         c.strokeStyle = "#0072FF";
-        c.strokeText('Space Impact', 120, 200);
+        c.strokeText('Space Pi', 220, 200);
 
         if (!hover) {
             c.fillStyle = "#2dbbff";
@@ -421,7 +455,8 @@
         c.font = "40px Roboto";
         c.fillText(score.toString(), 300, 37);
 
-        if (killCounter >= 51){
+//        if (killCounter >= 51){
+        if (killCounter >= 21){
             var bossHP = 0;
             for(var i = 0; i < enemies.length; i++){
                 if(enemies[i].type === "boss"){
@@ -545,12 +580,14 @@
         return Math.sqrt( (sh - b) * (sh - b) );
     }
 
-
+//ADJUST DIFFICULTY
     function spawnEnemy() {
-        if (enemies.length === 0 && killCounter >= 51) {
+ //       if (enemies.length === 0 && killCounter >= 51) {
+        if (enemies.length === 0 && killCounter >= 21) {
             bossAlive = false;
         }
 
+//        if (killCounter <= 10) {
         if (killCounter <= 10) {
             if (enemy.spawnClock % 35 === 0) {
                 enemies.push({
@@ -560,7 +597,8 @@
                 });
             }
             enemy.spawnClock++;
-        } else if (killCounter <= 25) {
+//        } else if (killCounter <= 25) {
+        } else if (killCounter <= 15) {
             if (enemy.spawnClock % 55 == 0) {
                 enemies.push({
                     x: canvas.width,
@@ -570,7 +608,8 @@
                 });
             }
             enemy.spawnClock++;
-        } else if (killCounter <= 50) {
+//        } else if (killCounter <= 50) {
+        } else if (killCounter <= 20) {
             if (enemy.spawnClock % 60 == 0) {
                 enemies.push({
                     x: canvas.width,
@@ -822,3 +861,80 @@
     function randomInt(min, max) {
         return Math.floor(Math.random() * (max - min + 1) + min);
     }
+
+
+  //FCM
+  messaging.usePublicVapidKey('BEYD-FZEbnHS43dHqtqClF6JyAB3gqAgcqFfXfLahBxPjLWECWpTrqZdrtYlfXngYp_KTSDR6MiKuihckytD6_g');
+  requestPermission();
+
+  // IDs of divs that display Instance ID token UI or request permission UI.
+  const tokenDivId = 'token_div';
+  const permissionDivId = 'permission_div';
+  
+  // Callback fired if Instance ID token is updated.
+  messaging.onTokenRefresh(() => {
+    messaging.getToken().then((refreshedToken) => {
+      console.log('Token refreshed: ', refreshedToken);
+    }).catch((err) => {
+      console.log('Unable to retrieve refreshed token ', err);
+    });
+  });
+
+  // Handle incoming messages.
+  messaging.onMessage((payload) => {
+    console.log('Message received. ', payload);
+    analytics.logEvent('notification_received_foreground', {debug_mode: true});
+
+    const notificationTitle = 'SpacePi';
+    const notificationOptions = {
+      body: 'Come play Space Pi!',
+      icon: 'assets/firebase-logo.png'
+    };
+  
+    return self.registration.showNotification(notificationTitle, notificationOptions);
+  });
+  
+  function requestPermission() {
+    console.log('Requesting permission...');
+
+    Notification.requestPermission().then((permission) => {
+      if (permission === 'granted') {
+        console.log('Notification permission granted.');
+        logToken();
+      } else {
+        console.log('Unable to get permission to notify.');
+      }
+    });
+
+  }
+
+  function logToken() {
+        messaging.getToken().then((currentToken) => {
+      if (currentToken) {
+        console.log('Registration token: ', currentToken);
+      } else {
+        console.log('No Instance ID token available. Request permission to generate one.');
+      }
+    }).catch((err) => {
+      console.log('An error occurred while retrieving token. ', err);
+        });
+  }
+
+  function deleteToken() {
+    messaging.getToken().then((currentToken) => {
+      messaging.deleteToken(currentToken).then(() => {
+        console.log('Token deleted.');
+      }).catch((err) => {
+        console.log('Unable to delete token. ', err);
+      });
+    }).catch((err) => {
+      console.log('Error retrieving Instance ID token. ', err);
+    });
+  }
+
+
+  //Perfmon
+  perfMetrics.onFirstInputDelay(function(delay, evt) {
+    console.log('First Input Delay detected');
+  });
+

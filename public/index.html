@@ -2,9 +2,13 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Space Impact 2.0</title>
+    <title>Space Pi</title>
     <link href="https://fonts.googleapis.com/css?family=Roboto:900" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Roboto+Mono:300" rel="stylesheet">
+
+   <script type="text/javascript">!function(n,e){var t,o,i,c=[],f={passive:!0,capture:!0},r=new Date,a="pointerup",u="pointercancel";function p(n,c){t||(t=c,o=n,i=new Date,w(e),s())}function s(){o>=0&&o<i-r&&(c.forEach(function(n){n(o,t)}),c=[])}function l(t){if(t.cancelable){var o=(t.timeStamp>1e12?new Date:performance.now())-t.timeStamp;"pointerdown"==t.type?function(t,o){function i(){p(t,o),r()}function c(){r()}function r(){e(a,i,f),e(u,c,f)}n(a,i,f),n(u,c,f)}(o,t):p(o,t)}}function w(n){["click","mousedown","keydown","touchstart","pointerdown"].forEach(function(e){n(e,l,f)})}w(n),self.perfMetrics=self.perfMetrics||{},self.perfMetrics.onFirstInputDelay=function(n){c.push(n),s()}}(addEventListener,removeEventListener);</script>
+
+
 </head>
 <body>
 <canvas id="gameArea" width="800" height="650" style="border: solid black 2px;"></canvas>
@@ -14,6 +18,9 @@
 <script src="/__/firebase/7.2.2/firebase-database.js"></script>
 <script src="/__/firebase/7.2.2/firebase-analytics.js"></script>
 <script src="/__/firebase/7.2.2/firebase-messaging.js"></script>
+<script src="/__/firebase/7.2.2/firebase-performance.js"></script>
+<script src="/__/firebase/7.2.3/firebase-remote-config.js"></script>
+
 <script src="/__/firebase/init.js"></script>
 <script src="game.js"></script>
 </body>
