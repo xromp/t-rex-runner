@@ -4,31 +4,14 @@
     const container = document.getElementById('gameArea');
     const googleSignInBtn = document.getElementById('google-signin');
     const googleSignOutBtn = document.getElementById('google-signout');
-    //RemoteConfig
-    remoteConfig.settings = {
-        minimumFetchIntervalMillis: 3600000,
-      };
-
-    var remoteHealth = 3;
-
-    remoteConfig.fetchAndActivate()
-    .then(() => {
-        //fetched
-        console.log('fetched lives: ', remoteConfig.getValue('lives'));
-        remoteHealth = remoteConfig.getValue('lives');
-        // maxHealth = remoteHealth;
-        // health = maxHealth;
-        // drawUI();
-    })
-    .catch((err) => {
-      console.error(err);
-    });
-      
-      
-
 
     var canvas = document.getElementById("gameArea");
     var c = canvas.getContext("2d");
+
+    //RemoteConfig
+    remoteConfig.settings = {
+        minimumFetchIntervalMillis: 3600000,
+    };
 
     var ship = {
         img: new Image(),
@@ -145,11 +128,44 @@
     ];
 
     //TEST - uncomment first line
-    //canvas.addEventListener('mousemove', shipSetPos, false);
+    // canvas.addEventListener('mousemove', shipSetPos, false);
     canvas.addEventListener('mousemove', menuButtonHover, false);
     canvas.addEventListener('mousedown', shipStartFire, false);
     canvas.addEventListener('mousedown', onButtonClick, false);
     canvas.addEventListener('mouseup', shipStopFire, false);
+
+    var remoteHealth = 3;
+
+    remoteConfig.fetchAndActivate()
+    .then(() => {
+        //fetched
+        console.log('fetched lives: ', remoteConfig.getValue('lives'));
+        remoteHealth = remoteConfig.getValue('lives');
+        health = remoteHealth['_value'];
+        maxHealth = remoteHealth['_value'];
+        var storage = firebase.storage();
+        var pathReference = storage.ref('ship_blue.png');
+
+        if (maxHealth == 4 ) {
+            pathReference = storage.ref('ship_green.png');
+        } else if (maxHealth == 3) {
+            pathReference = storage.ref('ship_pink.png');
+        }
+        pathReference.getDownloadURL().then(function(url) {
+            ship.img.src = url
+        })
+        // ship.img.src = "Sprites/ship_green.png";
+
+        // maxHealth = remoteHealth;
+        // console.log(maxHealth);
+        // health = maxHealth;
+        // drawUI();
+        
+    })
+    .catch((err) => {
+        console.error(err);
+    });
+
     function Auth() {}
     Auth.prototype = {
         signInWithPopupGoogle: function() {
@@ -275,7 +291,7 @@
                 }
                 // user.uid.toString()
                 this.ref.collection("players").doc("Q5EQAK64fpNprsBe2NwMUamMPa221").collection("activities").add({
-                    score, date: firebase.firestore.Timestamp.fromDate(new Date())
+                    score, date: firebase.firestore.Timestamp.fromDate(new Date()), name: "Rommel Penaflor",
                 })
 
                 analytics.logEvent('score', score, {debug_mode: true});
@@ -498,7 +514,7 @@
         c.fillText(score.toString(), 300, 37);
 
 //        if (killCounter >= 51){
-        if (killCounter >= 21){
+        if (killCounter >= 11){
             var bossHP = 0;
             for(var i = 0; i < enemies.length; i++){
                 if(enemies[i].type === "boss"){
@@ -625,12 +641,12 @@
 //ADJUST DIFFICULTY
     function spawnEnemy() {
  //       if (enemies.length === 0 && killCounter >= 51) {
-        if (enemies.length === 0 && killCounter >= 21) {
+        if (enemies.length === 0 && killCounter >= 10) {
             bossAlive = false;
         }
 
 //        if (killCounter <= 10) {
-        if (killCounter <= 10) {
+        if (killCounter <= 5) {
             if (enemy.spawnClock % 35 === 0) {
                 enemies.push({
                     x: canvas.width,
@@ -640,7 +656,7 @@
             }
             enemy.spawnClock++;
 //        } else if (killCounter <= 25) {
-        } else if (killCounter <= 15) {
+        } else if (killCounter <= 8) {
             if (enemy.spawnClock % 55 == 0) {
                 enemies.push({
                     x: canvas.width,
@@ -651,7 +667,7 @@
             }
             enemy.spawnClock++;
 //        } else if (killCounter <= 50) {
-        } else if (killCounter <= 20) {
+        } else if (killCounter <= 10) {
             if (enemy.spawnClock % 60 == 0) {
                 enemies.push({
                     x: canvas.width,
